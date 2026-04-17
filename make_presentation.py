@@ -318,88 +318,100 @@ for i, (color, title, body, pts) in enumerate(features):
                pt, 9, dot_color=color, text_color=DARK_GRAY)
 
 
+# ── Shared helper for screenshot slides (5, 6, 7) ────────────────────────────
+def screenshot_slide(title, section, img_path, points):
+    """
+    Two-column layout:
+      Left  ~8.4" : screenshot
+      Right ~3.6" : dark panel with 6 bullet callouts
+    No overlays on the screenshot.
+    """
+    sl = prs.slides.add_slide(BLANK)
+    rect(sl, 0, 0, SW, SH, fill=AWS_DARK)
+    bottom_accent(sl)
+    section_tag(sl, section)
+    txb(sl, I(0.35), I(0.3), I(9.5), I(0.52), title, 20, bold=True, color=WHITE)
+
+    # screenshot — left column, full height below title
+    IMG_L = I(0.35)
+    IMG_T = I(0.92)
+    IMG_W = I(8.38)
+    IMG_H = I(6.46)
+    sl.shapes.add_picture(img_path, int(IMG_L), int(IMG_T), int(IMG_W), int(IMG_H))
+
+    # right panel
+    PNL_L = I(8.85)
+    PNL_T = I(0.92)
+    PNL_W = I(3.12)
+    PNL_H = I(6.46)
+    rect(sl, PNL_L, PNL_T, PNL_W, PNL_H, fill=RGBColor(0x0D, 0x1A, 0x2E))
+    rect(sl, PNL_L, PNL_T, I(0.06), PNL_H, fill=AWS_ORANGE)  # left accent strip
+
+    txb(sl, PNL_L + I(0.18), PNL_T + I(0.18), PNL_W - I(0.28), I(0.28),
+        "KEY HIGHLIGHTS", 8, bold=True, color=AWS_ORANGE)
+
+    for j, pt in enumerate(points):
+        py = PNL_T + I(0.58 + j * 0.94)
+        rect(sl, PNL_L + I(0.18), py, PNL_W - I(0.28), I(0.82),
+             fill=RGBColor(0x1A, 0x2A, 0x3E))
+        rect(sl, PNL_L + I(0.18), py, I(0.04), I(0.82),
+             fill=AWS_ORANGE)
+        txb(sl, PNL_L + I(0.28), py + I(0.1), PNL_W - I(0.42), I(0.65),
+            pt, 10, color=RGBColor(0xE2, 0xE8, 0xF0))
+
+    return sl
+
+
 # ═════════════════════════════════════════════════════════════════════════════
 # SLIDE 5 — Screenshot: Main Search Page
 # ═════════════════════════════════════════════════════════════════════════════
-sl = prs.slides.add_slide(BLANK)
-rect(sl, 0, 0, SW, SH, fill=AWS_DARK)
-bottom_accent(sl)
-section_tag(sl, "LIVE DEMO — SEARCH & DISCOVERY")
-txb(sl, I(0.55), I(0.42), I(9.5), I(0.5),
-    "Main Dashboard — Browse & Search All AWS Announcements",
-    22, bold=True, color=WHITE)
-
-sl.shapes.add_picture(f"{ASSETS}/screen_search.png",
-                       int(I(0.35)), int(I(0.98)),
-                       int(I(12.62)), int(I(6.0)))
-
-for cx, cy, text in [
-    (I(0.38), I(1.02), "Live search with 300ms debounce"),
-    (I(0.38), I(1.46), "Service / type / date / sort filters"),
-    (I(0.38), I(1.9),  "Result count always visible"),
-    (I(9.35), I(1.02), "Color-coded feature type badges"),
-    (I(9.35), I(1.46), "AI key points — expand on hover"),
-    (I(9.35), I(1.9),  "Direct AWS announcement links"),
-]:
-    rect(sl, cx, cy, I(2.85), I(0.32), fill=RGBColor(0x0D,0x1A,0x26))
-    txb(sl, cx + I(0.08), cy + I(0.05), I(2.72), I(0.24),
-        "▶  " + text, 9, color=AWS_ORANGE)
-
+screenshot_slide(
+    title="Main Dashboard — Browse & Search All AWS Announcements",
+    section="LIVE DEMO — SEARCH & DISCOVERY",
+    img_path=f"{ASSETS}/screen_search.png",
+    points=[
+        "Live search bar\nwith 300ms debounce",
+        "Filters: service,\ntype, date, sort order",
+        "Result count\nalways visible",
+        "Color-coded\nfeature type badges",
+        "AI key points\nexpandable per card",
+        "Direct link to\nAWS announcement",
+    ],
+)
 
 # ═════════════════════════════════════════════════════════════════════════════
 # SLIDE 6 — Screenshot: Feature Detail Page
 # ═════════════════════════════════════════════════════════════════════════════
-sl = prs.slides.add_slide(BLANK)
-rect(sl, 0, 0, SW, SH, fill=AWS_DARK)
-bottom_accent(sl)
-section_tag(sl, "LIVE DEMO — FEATURE DETAIL")
-txb(sl, I(0.55), I(0.42), I(9.5), I(0.5),
-    "Feature Detail Page — Deep-Dive Into Any Announcement",
-    22, bold=True, color=WHITE)
-
-sl.shapes.add_picture(f"{ASSETS}/screen_detail.png",
-                       int(I(0.35)), int(I(0.98)),
-                       int(I(12.62)), int(I(6.0)))
-
-for cx, cy, text in [
-    (I(0.38), I(1.02), "Badges: date · service · domain · type"),
-    (I(0.38), I(1.46), "3–5 sentence AI summary, engineer-focused"),
-    (I(0.38), I(1.9),  "Structured key points for rapid evaluation"),
-    (I(9.35), I(1.02), "Link to original AWS announcement"),
-    (I(9.35), I(1.46), "Back button preserves search state"),
-    (I(9.35), I(1.9),  "Summarized-at timestamp for audit"),
-]:
-    rect(sl, cx, cy, I(2.85), I(0.32), fill=RGBColor(0x0D,0x1A,0x26))
-    txb(sl, cx + I(0.08), cy + I(0.05), I(2.72), I(0.24),
-        "▶  " + text, 9, color=AWS_ORANGE)
-
+screenshot_slide(
+    title="Feature Detail Page — Deep-Dive Into Any Announcement",
+    section="LIVE DEMO — FEATURE DETAIL",
+    img_path=f"{ASSETS}/screen_detail.png",
+    points=[
+        "Badges: date,\nservice, domain, type",
+        "3–5 sentence AI\nsummary, engineer-focused",
+        "Structured key\npoints for evaluation",
+        "One-click link to\nAWS announcement",
+        "Back button\npreserves search state",
+        "Summarized-at\ntimestamp for audit",
+    ],
+)
 
 # ═════════════════════════════════════════════════════════════════════════════
 # SLIDE 7 — Screenshot: Filtered Results
 # ═════════════════════════════════════════════════════════════════════════════
-sl = prs.slides.add_slide(BLANK)
-rect(sl, 0, 0, SW, SH, fill=AWS_DARK)
-bottom_accent(sl)
-section_tag(sl, "LIVE DEMO — FILTER & SEARCH")
-txb(sl, I(0.55), I(0.42), I(11), I(0.5),
-    "Filtered: 'bedrock'  ·  service: amazon-bedrock  ·  type: new-feature",
-    22, bold=True, color=WHITE)
-
-sl.shapes.add_picture(f"{ASSETS}/screen_filtered.png",
-                       int(I(0.35)), int(I(0.98)),
-                       int(I(12.62)), int(I(6.0)))
-
-for cx, cy, text in [
-    (I(0.38), I(1.02), "Keyword highlights matching records"),
-    (I(0.38), I(1.46), "Active filter pills shown in header"),
-    (I(0.38), I(1.9),  "Real-time result count"),
-    (I(9.35), I(1.02), "URL captures all filters — fully shareable"),
-    (I(9.35), I(1.46), "Infinite scroll auto-loads next page"),
-    (I(9.35), I(1.9),  "Works across all 8 feature type categories"),
-]:
-    rect(sl, cx, cy, I(2.85), I(0.32), fill=RGBColor(0x0D,0x1A,0x26))
-    txb(sl, cx + I(0.08), cy + I(0.05), I(2.72), I(0.24),
-        "▶  " + text, 9, color=AWS_ORANGE)
+screenshot_slide(
+    title="Filtered: 'bedrock'  ·  service: amazon-bedrock  ·  type: new-feature",
+    section="LIVE DEMO — FILTER & SEARCH",
+    img_path=f"{ASSETS}/screen_filtered.png",
+    points=[
+        "Keyword search\nmatches title & summary",
+        "Active filter pills\nshown in header",
+        "Real-time\nresult count",
+        "URL captures all\nfilters — shareable",
+        "Infinite scroll\nauto-loads next page",
+        "Works across\nall 8 feature types",
+    ],
+)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
